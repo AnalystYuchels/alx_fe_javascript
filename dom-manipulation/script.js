@@ -380,4 +380,65 @@ fetchQuotesFromServer().then(quotes => {
   // You can integrate these into your syncing logic
 });
 
+// Fetch quotes from server (simulation using JSONPlaceholder)
+function fetchQuotesFromServer() {
+  return fetch('https://jsonplaceholder.typicode.com/posts')
+      .then(response => response.json())
+      .then(data => {
+          // Convert the posts into "quotes" (using title and id as placeholders)
+          return data.slice(0, 5).map(item => ({
+              id: item.id,
+              text: item.title,
+              updatedAt: Date.now() // simulate timestamp
+          }));
+      })
+      .catch(error => {
+          console.error('Error fetching quotes from server:', error);
+          return [];
+      });
+}
+
+// Save quotes to local storage
+function saveQuotesToLocal(quotes) {
+  localStorage.setItem('quotes', JSON.stringify(quotes));
+}
+
+// Load quotes from local storage
+function loadQuotesFromLocal() {
+  const quotes = localStorage.getItem('quotes');
+  return quotes ? JSON.parse(quotes) : [];
+}
+
+// Simple conflict resolution: server wins
+function resolveConflicts(localQuotes, serverQuotes) {
+  const localMap = new Map(localQuotes.map(q => [q.id, q]));
+  serverQuotes.forEach(sq => {
+      localMap.set(sq.id, sq); // overwrite local with server version
+  });
+  return Array.from(localMap.values());
+}
+
+// Sync quotes with server
+function syncQuotes() {
+  fetchQuotesFromServer().then(serverQuotes => {
+      const localQuotes = loadQuotesFromLocal();
+      const mergedQuotes = resolveConflicts(localQuotes, serverQuotes);
+      saveQuotesToLocal(mergedQuotes);
+      console.log('Quotes synced:', mergedQuotes);
+
+      // Optional: Notify UI
+      const notification = document.getElementById('sync-notification');
+      if (notification) {
+          notification.textContent = 'Quotes synced with server!';
+          setTimeout(() => notification.textContent = '', 3000);
+      }
+  });
+}
+
+// Periodically sync every 10 seconds
+setInterval(syncQuotes, 10000);
+
+// Initial sync on page load
+document.addEventListener('DOMContentLoaded', syncQuotes);
+
 init();
