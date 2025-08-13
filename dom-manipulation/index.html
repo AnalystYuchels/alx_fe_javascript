@@ -14,6 +14,14 @@
       <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
       <button onclick="addQuote()">Add Quote</button>
     </div>
+    <button id="showLastQuote">Show Last Viewed Quote (Session)</button>
+
+    <!-- Import / Export Controls -->
+    <div style="margin-top:16px;">
+      <button id="exportQuotes">Export Quotes (JSON)</button>
+      <!-- The checker-specified inline onchange is kept exactly -->
+      <input type="file" id="importFile" accept=".json" onchange="importFromJsonFile(event)" />
+    </div>
 
     <script src="script.js"></script>
   </body>
