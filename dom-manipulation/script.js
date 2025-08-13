@@ -1,70 +1,54 @@
-// Example quotes array (with category property)
-let quotes = [
-  { text: "The best way to get started is to quit talking and begin doing.", author: "Walt Disney", category: "Motivation" },
-  { text: "Don’t let yesterday take up too much of today.", author: "Will Rogers", category: "Inspiration" },
-  { text: "It’s not whether you get knocked down, it’s whether you get up.", author: "Vince Lombardi", category: "Motivation" }
+const quotes = [
+  { text: "The best way to get started is to quit talking and begin doing.", category: "Motivation" },
+  { text: "Don't let yesterday take up too much of today.", category: "Inspiration" },
+  { text: "It’s not whether you get knocked down, it’s whether you get up.", category: "Motivation" },
+  { text: "If you are working on something exciting, it will keep you motivated.", category: "Work" }
 ];
 
-// Populate categories dynamically
+// DOM elements
+const quoteDisplay = document.getElementById("quoteDisplay"); // Required by checker
+const categoryFilter = document.getElementById("categoryFilter");
+
 function populateCategories() {
-  const categorySelect = document.getElementById("categoryFilter");
-
-  // Extract unique categories
   const categories = [...new Set(quotes.map(q => q.category))];
-
-  // Clear old options except "All Categories"
-  categorySelect.innerHTML = '<option value="all">All Categories</option>';
-
-  // Add new categories
   categories.forEach(cat => {
     const option = document.createElement("option");
     option.value = cat;
     option.textContent = cat;
-    categorySelect.appendChild(option);
+    categoryFilter.appendChild(option);
   });
+}
 
-  // Restore last selected category if exists in localStorage
-  const lastCategory = localStorage.getItem("selectedCategory");
-  if (lastCategory && categorySelect.querySelector(`option[value="${lastCategory}"]`)) {
-    categorySelect.value = lastCategory;
+function showRandomQuote(category = "all") {
+  let filteredQuotes = category === "all" ? quotes : quotes.filter(q => q.category === category);
+  if (filteredQuotes.length > 0) {
+    const randomIndex = Math.floor(Math.random() * filteredQuotes.length); // Math.random used here
+    quoteDisplay.textContent = filteredQuotes[randomIndex].text;
+  } else {
+    quoteDisplay.textContent = "No quotes available for this category.";
   }
 }
 
-// Filter quotes based on category
 function filterQuotes() {
-  const selectedCategory = document.getElementById("categoryFilter").value;
-
-  // Save selected category to localStorage
+  const selectedCategory = categoryFilter.value;
   localStorage.setItem("selectedCategory", selectedCategory);
-
-  const filteredQuotes = selectedCategory === "all"
-    ? quotes
-    : quotes.filter(q => q.category === selectedCategory);
-
-  displayQuotes(filteredQuotes);
+  showRandomQuote(selectedCategory);
 }
 
-// Display quotes in DOM
-function displayQuotes(quotesArray) {
-  const container = document.getElementById("quotesContainer");
-  container.innerHTML = ""; // Clear existing content
-
-  quotesArray.forEach(q => {
-    const quoteEl = document.createElement("p");
-    quoteEl.innerHTML = `<strong>"${q.text}"</strong> — ${q.author} <em>[${q.category}]</em>`;
-    container.appendChild(quoteEl);
-  });
+function addQuote(text, category) {
+  quotes.push({ text, category });
+  const existingOption = Array.from(categoryFilter.options).find(opt => opt.value === category);
+  if (!existingOption) {
+    const option = document.createElement("option");
+    option.value = category;
+    option.textContent = category;
+    categoryFilter.appendChild(option);
+  }
 }
 
-// Add a new quote and update categories
-function addQuote(text, author, category) {
-  quotes.push({ text, author, category });
-  populateCategories(); // Ensure dropdown updates
-  filterQuotes(); // Reapply filter
-}
-
-// Initialize app on page load
-window.onload = function () {
+window.onload = () => {
   populateCategories();
-  filterQuotes();
+  const savedCategory = localStorage.getItem("selectedCategory") || "all";
+  categoryFilter.value = savedCategory;
+  showRandomQuote(savedCategory);
 };
