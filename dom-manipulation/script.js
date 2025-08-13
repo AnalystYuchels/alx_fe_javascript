@@ -5,7 +5,7 @@ let quotes = [
   { text: "Your time is limited, so don’t waste it living someone else’s life.", category: "Life" }
 ];
 
-// Function to display a random quote (required name & innerHTML)
+// Required function 1
 function displayRandomQuote() {
   if (quotes.length === 0) {
     document.getElementById("quoteDisplay").innerHTML = "<em>No quotes available.</em>";
@@ -17,7 +17,11 @@ function displayRandomQuote() {
   document.getElementById("quoteDisplay").innerHTML = `"${quote.text}" — <strong>${quote.category}</strong>`;
 }
 
-// Function to add a new quote
+// Required function 2 (just calls the first one)
+function showRandomQuote() {
+  displayRandomQuote();
+}
+
 function addQuote() {
   let quoteText = document.getElementById("newQuoteText").value.trim();
   let quoteCategory = document.getElementById("newQuoteCategory").value.trim();
@@ -28,15 +32,15 @@ function addQuote() {
   }
 
   quotes.push({ text: quoteText, category: quoteCategory });
-  
+
   document.getElementById("newQuoteText").value = "";
   document.getElementById("newQuoteCategory").value = "";
-  
+
   alert("Quote added successfully!");
 }
 
-// Attach event listener to 'Show New Quote' button
-document.getElementById("newQuote").addEventListener("click", displayRandomQuote);
+document.getElementById("newQuote").addEventListener("click", showRandomQuote);
 
-// Show the first random quote on page load
+// Show first quote on page load
 displayRandomQuote();
+
