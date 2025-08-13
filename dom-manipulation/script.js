@@ -359,4 +359,25 @@ function init() {
   setInterval(syncWithServer, SYNC_INTERVAL_MS);
 }
 
+// Function to simulate fetching quotes from the server
+function fetchQuotesFromServer() {
+  // Simulated server response
+  return fetch('https://jsonplaceholder.typicode.com/posts')
+      .then(response => response.json())
+      .then(data => {
+          // For simulation, we’ll just map the titles into "quotes"
+          return data.slice(0, 5).map(item => item.title);
+      })
+      .catch(error => {
+          console.error('Error fetching quotes from server:', error);
+          return [];
+      });
+}
+
+// Example usage: Fetch and log quotes
+fetchQuotesFromServer().then(quotes => {
+  console.log('Fetched quotes:', quotes);
+  // You can integrate these into your syncing logic
+});
+
 init();
